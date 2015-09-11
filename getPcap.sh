@@ -4,7 +4,6 @@
 
 display_usage() {
         echo -e "\n\nUSAGE: getPcap IP start_time end_time\n\n"
-                echo -e "This script can take a long time to run against all PCap files."
 }
 
 # if three arguments not supplied, display usage
@@ -68,7 +67,7 @@ rm /tmp/merged.pcap
 find . -newerct $2 ! -newerct $3 | xargs -I {} tcpdump -r {} -w /tmp/{} host $1
 # merge all pcaps created in /home/so/pcap into one file
 mergecap -w /tmp/merged.pcap /tmp/snort*
-# remove all pcaps but leave pcap.out alone
+# remove all pcaps used to created the merged pcap
 rm /tmp/snort.log*
 
 echo -e "\n\nMerged PCAP is /tmp/merged.pcap\n\n"
