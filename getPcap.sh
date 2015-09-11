@@ -7,8 +7,8 @@ display_usage() {
                 echo -e "This script can take a long time to run against all PCap files."
 }
 
-# if less than two arguments supplied, display usage
-if [ $# -le 1 ]; then
+# if three arguments not supplied, display usage
+if [ $# -ne 3 ]; then
         display_usage
         exit 1
 fi
