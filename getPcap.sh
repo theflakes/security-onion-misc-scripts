@@ -3,11 +3,12 @@
 # date is in format of: YYYY-MM-DD
 
 display_usage() {
-        echo -e "\n\nUSAGE: getPcap IP "DD MMM YYYY HH:MM" "DD MMM YYYY HH:MM"\n\n"
+        echo -e '\n\nUSAGE: getPcap IP "DD MMM YYYY" "HH:MM" "HH:MM"'
+        echo -e 'getPcap 1.1.1.1 "09 Sep 2015" "01:12" "20:00"\n\n'
 }
 
 # if three arguments not supplied, display usage
-if [ $# -ne 3 ]; then
+if [ $# -ne 4 ]; then
         display_usage
         exit 1
 fi
@@ -29,7 +30,6 @@ echo -e "\n\n"
 dirList=$(find /nsm/sensor_data/ -maxdepth 1 -mindepth 1 -type d | sort)
 
 # Show a menu and ask for input. If the user entered a valid choice,
-# then invoke the editor on that file
 select dir in $dirList; do
     if [ -n "$dir" ]; then
         int=$dir
@@ -39,36 +39,19 @@ select dir in $dirList; do
     break
 done
 
-# Displays a list of directories in packet capture directory and prompt for which
-# file to edit
+pdate=`date -d "$2" +%Y-%m-%d`
 
-# Set the prompt for the select command
-PS3="Choose date or 'q' to quit: "
-echo -e "\n\n"
-
-# Create a list of files to display
-dirList=$(find $int/dailylogs -maxdepth 1 -mindepth 1 -type d | sort)
-
-# Show a menu and ask for input. If the user entered a valid choice,
-# then invoke the editor on that file
-select dir in $dirList; do
-    if [ -n "$dir" ]; then
-        pdate=$dir
-    else
-                exit
-    fi
-    break
-done
-
-cd $pdate
+cd $int/dailylogs/$pdate
 rm /tmp/merged.pcap
 
-# from: http://unroutable.blogspot.com/2015/07/extracting-traffic-from-rolling-capture.html
 # find all files created between the times of $2 and $3
-find . -newerct "$2" ! -newerct "$3" | xargs -I {} tcpdump -r {} -w /tmp/{} host $1
-# merge all pcaps created in /home/so/pcap into one file
+find . -newerct "$2 $3" ! -newerct "$2 $4" | xargs -I {} tcpdump -r {} -w /tmp/{} host $1
+# merge all pcaps
 mergecap -w /tmp/merged.pcap /tmp/snort*
 # remove all pcaps used to created the merged pcap
 rm /tmp/snort.log*
 
-echo -e "\n\nMerged PCAP is /tmp/merged.pcap\n\n"
+echo -e "\n\n*********************************************************************************************"
+echo -e "Merged PCAP is /tmp/merged.pcap"
+ls -l /tmp/merged.pcap
+echo -e "*********************************************************************************************\n\n"
