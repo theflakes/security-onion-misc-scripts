@@ -63,6 +63,7 @@ done
 cd $pdate
 rm /tmp/merged.pcap
 
+# from: http://unroutable.blogspot.com/2015/07/extracting-traffic-from-rolling-capture.html
 # find all files created between the times of $2 and $3
 find . -newerct $2 ! -newerct $3 | xargs -I {} tcpdump -r {} -w /tmp/{} host $1
 # merge all pcaps created in /home/so/pcap into one file
