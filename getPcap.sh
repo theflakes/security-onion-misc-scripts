@@ -3,7 +3,7 @@
 # date is in format of: YYYY-MM-DD
 
 display_usage() {
-        echo -e "\n\nUSAGE: getPcap source.ip destination.ip\n\n"
+        echo -e "\n\nUSAGE: getPcap IP start_time end_time\n\n"
                 echo -e "This script can take a long time to run against all PCap files."
 }
 
@@ -17,11 +17,6 @@ fi
 if [[ ($# == "--help") || ($# == "-h") ]]; then
         display_usage
         exit 0
-fi
-
-# if output directory doesn't exist then create it
-if [ ! -d "./pcap" ]; then
-        mkdir ./pcap
 fi
 
 # Displays a list of directories in packet capture directory and prompt for which
@@ -66,20 +61,14 @@ select dir in $dirList; do
     break
 done
 
-rm ./pcap/*.pcap
+cd $pdate
+rm /tmp/merged.pcap
 
-x=1
-# iterate through all pcap files and extract searched for packets
-for i in `find $pdate -type f`;
-  do
-    echo $i
-    tshark -r $i -R "(ip.src == $1 and ip.dst == $2) or (ip.dst == $1 and ip.src == $2)" -w ./pcap/$x.pcap
-    x=$((x+1))
-  done
+# find all files created between the times of $2 and $3
+find . -newerct $2 ! -newerct $3 | xargs -I {} tcpdump -r {} -w /tmp/{} host $1
 # merge all pcaps created in /home/so/pcap into one file
-rm ./pcap/pcap.out
-mergecap ./pcap/* -w ./pcap/pcap.out
+mergecap -w /tmp/merged.pcap /tmp/snort*
 # remove all pcaps but leave pcap.out alone
-rm ./pcap/*.pcap
-# rename pcap.out to out.pcap so we can open it with Wireshark
-mv ./pcap/pcap.out ./pcap/out.pcap
+rm /tmp/snort.log*
+
+echo -e "\n\nMerged PCAP is /tmp/merged.pcap\n\n"
