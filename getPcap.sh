@@ -3,7 +3,7 @@
 # date is in format of: YYYY-MM-DD
 
 display_usage() {
-        echo -e "\n\nUSAGE: getPcap IP start_time end_time\n\n"
+        echo -e "\n\nUSAGE: getPcap IP "DD MMM YYYY HH:MM" "DD MMM YYYY HH:MM"\n\n"
 }
 
 # if three arguments not supplied, display usage
