@@ -19,17 +19,14 @@ if [[ ($# == "--help") || ($# == "-h") ]]; then
         exit 0
 fi
 
-# Displays a list of directories in packet capture directory and prompt for which
-# file to edit
-
 # Set the prompt for the select command
 PS3="Choose interface or 'q' to quit: "
 echo -e "\n\n"
 
-# Create a list of files to display
+# Create a list of directories to display
 dirList=$(find /nsm/sensor_data/ -maxdepth 1 -mindepth 1 -type d | sort)
 
-# Show a menu and ask for input. If the user entered a valid choice,
+# Show a menu and ask for input.
 select dir in $dirList; do
     if [ -n "$dir" ]; then
         int=$dir
