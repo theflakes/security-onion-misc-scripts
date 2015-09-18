@@ -1,6 +1,4 @@
 #!/bin/bash
-# input:  date source.IP destination.IP
-# date is in format of: YYYY-MM-DD
 
 display_usage() {
         echo -e '\n\nUSAGE: getPcap IP "DD MMM YYYY" "HH:MM" "HH:MM"'
